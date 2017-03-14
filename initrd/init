@@ -174,7 +174,17 @@ load_ext_modules
 if [ -n "$LIVE" ]; then
 	# update fstab to only have minimal fstab as everything
 	# is already mounted differently in LIVE boot
-	sed -i '/\/dev\/block\//d' fstab.androidia_64
+	androidhw=androidia_64
+	for c in `cat /proc/cmdline`; do
+		case $c in
+			androidboot.hardware=*)
+				androidhw=`echo "$c" | cut -b22-`
+				;;
+		esac
+	done
+	if [ -e fstab.$androidhw ]; then
+		sed -i '/\/dev\/block\//d' fstab.$androidhw
+	fi
 	mount_data
 fi
 
